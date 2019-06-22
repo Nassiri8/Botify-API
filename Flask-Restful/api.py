@@ -16,6 +16,7 @@ class Home(Resource):
 
 #Routes for home
 api.add_resource(Home, '/')
+api.add_resource(towns, '/towns')
 
 if __name__ == '__main__':
     app.run()
