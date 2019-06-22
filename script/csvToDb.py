@@ -11,18 +11,19 @@ mydb = pymysql.connect(host='127.0.0.1',
 cursor = mydb.cursor()
 
 with open('database.csv', encoding="utf8") as csvfile:
-    csv_data = csv.reader(csvfile, quotechar='|')
+    csv_data = csv.reader(csvfile, delimiter=',', quotechar='"')
     for row in csv_data:
-        print(row)
-        #data.append(row)
+        data.append(row)
         #cursor.execute('INSERT INTO Towns(Region Code, Region Name, Code Department, Code District, Code town, Town Name, Population, Average Age) VALUES({}, {}, {}, {}, {}, {}, {}, {})'.format(row))
 
-#cursor.execute("CREATE TABLE towns(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, {} INT, {} VARCHAR(255), {} INT, {} INT, {} INT, {} VARCHAR(255), {} float, {} float)".format(data[1][0], data[1][1], data[1][2], data[1][3], data[1][4], data[1][5], data[1][6], data[1][7]))
-#data.remove(data[0])
-#data.remove(data[0])
-#while i < len(data):
-    #data[i][6].replace('"', '')
-    #cursor.execute('INSERT INTO Towns(region_code, region_name, dept_code, distr_code, code, name, population, average_age) VALUES({}, "{}", {}, {}, {}, "{}", {}, {})'.format(int(data[i][0]), data[i][1], int(data[i][2]), int(data[i][3]), int(data[i][4]), data[i][5], float(data[i][6]), float(data[i][7])))
-    #i+=1
+cursor.execute("CREATE TABLE towns(id INT PRIMARY KEY NOT NULL AUTO_INCREMENT, {} INT, {} VARCHAR(255), {} INT, {} INT, {} INT, {} VARCHAR(255), {} float, {} float)".format(data[0][0].replace(" ", "_"), data[0][1].replace(" ", "_"), data[0][2].replace(" ", "_"), data[0][3].replace(" ", "_"), data[0][4].replace(" ", "_"), data[0][5].replace(" ", "_"), data[0][6], data[0][7].replace(" ", "_")))
+data.remove(data[0])
+data.remove(data[0])
+print(data[3])
+
+i=0
+while i < len(data):
+    cursor.execute('INSERT INTO Towns(Region_Code, Region_Name, Code_Department, Code_District, Code_town, Town_Name, Population, Average_Age) VALUES({}, "{}", {}, {}, {}, "{}", {}, {})'.format(data[i][0].replace("'", ""), data[i][1], data[i][2].replace("'", ""), data[i][3].replace("'", ""), data[i][4].replace("'", ""), data[i][5], float(data[i][6].replace(",", ".")), data[i][7].replace("'", "")))
+    i+=1
 
 print("Done")
