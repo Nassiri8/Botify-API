@@ -1,4 +1,4 @@
-mport pymysql
+import pymysql
 import hashlib
 from app import app
 from db_config import mysql
