@@ -14,7 +14,7 @@ class Home(Resource):
     def get(self):
         return {'message':'Welcome Friends'}
 
-#Routes for home
+#Routes for towns and parameter
 api.add_resource(Home, '/')
 api.add_resource(towns, '/towns')
 api.add_resource(TownByName, '/town/<string:name>')
