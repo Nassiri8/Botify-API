@@ -6,6 +6,15 @@ from flask import Flask, request, jsonify
 from flask_restful import Resource, Api, reqparse, inputs
 from flaskext.mysql import MySQL
 
+def convertJson(rows):
+    i = 0
+    array = []
+    while i < len(rows):
+         dict ={'towns number': rows[i]['COUNT(Town_Name)'], 'average age': rows[i]["AVG(Average_Age)"], 'max population': rows[i]["MAX(Population)"], 'min population': rows[i]["MIN(Population)"]}
+         array.append(dict)
+         i+=1
+    return array
+
 def checkExist(a):
     if not a:
         a = 'null'
@@ -25,7 +34,7 @@ class aggs(Resource):
         query = 'SELECT COUNT(Town_Name), MAX(Population), MIN(Population), AVG(Average_Age) FROM towns WHERE Code_District = {} OR Code_Department = {}'.format(district, depart)
         cursor.execute(query)
         rows = cursor.fetchall()
-        resp = jsonify(rows)
+        resp = jsonify(convertJson(rows))
         if not rows:
             return jsonify({'about':'no data found'})
         resp.status_code = 200
