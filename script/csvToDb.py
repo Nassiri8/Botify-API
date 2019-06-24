@@ -23,7 +23,7 @@ print(data[3])
 
 i=0
 while i < len(data):
-    cursor.execute('INSERT INTO Towns(Region_Code, Region_Name, Code_Department, Code_District, Code_town, Town_Name, Population, Average_Age) VALUES({}, "{}", "{}", {}, {}, "{}", {}, {})'.format(data[i][0].replace("'", ""), data[i][1], data[i][2], data[i][3].replace("'", ""), data[i][4].replace("'", ""), data[i][5], float(data[i][6].replace(",", ".")), data[i][7].replace("'", "")))
+    cursor.execute('INSERT INTO Towns(Region_Code, Region_Name, Code_Department, Code_District, Code_town, Town_Name, Population, Average_Age) VALUES({}, "{}", "{}", {}, {}, "{}", {}, {})'.format(data[i][0].replace("'", ""), data[i][1], data[i][2], data[i][3].replace("'", ""), data[i][4].replace("'", ""), data[i][5], int(data[i][6].replace(",", " ")), data[i][7].replace("'", "")))
     i+=1
 
 mydb.commit()
