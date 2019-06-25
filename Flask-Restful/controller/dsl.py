@@ -7,6 +7,11 @@ from flask_restful import Resource, Api, reqparse, inputs
 from flaskext.mysql import MySQL
 
 class traitement:
+    def queryChoose(self, list):
+        if list['fields'] and list['filters']:
+            return True
+        return False
+
     def fields(self, list):
         if list:
             return True
@@ -24,7 +29,17 @@ class traitement:
         return query
     
     def queryFilter(self, list):
-        return ""
+        if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
+            i= 0
+            queryParams = ""
+            while i < len(list['fields']):
+                queryParams += list['fields'][i] + ","
+                i+=1
+            queryParams = queryParams[:-1]
+            if list["filters"]["field"] and list["filters"]["value"]:
+                query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+"= "+str(list["filters"]["value"])
+                return query
+        return False
 
 class dsl(Resource):
     def post(self):
@@ -33,10 +48,8 @@ class dsl(Resource):
         parser.add_argument('filters', type=dict, location='json')
         args = parser.parse_args()
         t = traitement()
-        return t.query(args)
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        query = 'SELECT {}, {} FROM towns'.format(args['fields'][0], args['fields'][1])
-        cursor.execute(query)
+        cursor.execute(t.queryFilter(args))
         rows = cursor.fetchall()
         return jsonify(rows)
