@@ -12,16 +12,19 @@ class traitement:
             return True
         return False
     
-    def query(self, list):
-        i = 1
-        element = '{}'
-        if self.fields(list) == True:
-            nb = len(list)
-            while i <= nb:
-                query = 'SELECT'+element+' FROM towns'
+    def querySimple(self, list):
+        if self.fields(list['fields'])== True:
+            i=0
+            queryParams = ""
+            while i < len(list['fields']):
+                queryParams += list['fields'][i] + ","
                 i+=1
+            queryParams = queryParams[:-1]
+            query= 'SELECT ' + queryParams + ' FROM towns'
         return query
-
+    
+    def queryFilter(self, list):
+        return ""
 
 class dsl(Resource):
     def post(self):
