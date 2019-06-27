@@ -12,6 +12,7 @@ class traitement:
             return True
         return False
     
+    #Basic Query "SELECT 'element' FROM 'table'"
     def querySimple(self, list):
         if self.fields(list['fields'])== True:
             i=0
@@ -23,6 +24,7 @@ class traitement:
             query= 'SELECT ' + queryParams + ' FROM towns'
         return query
     
+    #Query with only field and value
     def queryFilter(self, list):
         if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
             i= 0
@@ -36,6 +38,7 @@ class traitement:
                 return query
         return False
     
+    #Query with predicate in JSON
     def queryPredicate(self, list):
         predicate = {"gt": ">", "lt": "<", "equal":"=", "contains": "LIKE"}
 
@@ -62,7 +65,7 @@ class traitement:
                 return query
         return False
 
-    #Traitement du lancement query
+    #Traitement du lancement query ERROR
     def queryChoose(self, list):
         if list['fields'] and not None:
             self.querySimple(list)
