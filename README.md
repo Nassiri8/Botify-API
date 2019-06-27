@@ -8,6 +8,7 @@ Test technique Botify:
         - Lancement de L'API: run
 
     API Flask-Restful:
+    GET:
         Town:
         - /towns: Liste de toutes les villes dans un json par ville
         - /town/<string:name>: Donne la ville selon la Name passer dans l'URL 
@@ -17,6 +18,10 @@ Test technique Botify:
 
          Simple Aggregation:
 
+        GET:
          - /aggs: liste le nombre de ville, moyenne d'age, minimun et maximun de population selon le code dept ou le code du district passer dans le body
 
-        
+        Implement DSL: 
+
+        POST:
+        - /query: Traite un Json pour le transformer en SQL, 

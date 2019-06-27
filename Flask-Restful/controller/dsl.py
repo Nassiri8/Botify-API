@@ -66,6 +66,25 @@ class traitement:
                 return query
         return False
 
+    #Check
+    def checkList(self, list):
+        if list['filters']['and'] or list['filters']['or']:
+            i = 0
+
+
+    #Query for AND/OR
+    def queryAndOr(self, list):
+        predicate = {"gt": ">", "lt": "<", "equal":"=", "contains": "LIKE"}
+        if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
+            i= 0
+            queryParams = ""
+            while i < len(list['fields']):
+                queryParams += list['fields'][i] + ","
+                i+=1
+            queryParams = queryParams[:-1]
+        
+
+
     #Traitement du lancement query ERROR
     def queryChoose(self, list):
         query = ""
@@ -84,6 +103,8 @@ class dsl(Resource):
         parser.add_argument('filters', type=dict, location='json')
         args = parser.parse_args()
         t = traitement()
+        print(len(args['filters']['and']))
+        return args
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         if args['fields'] is not None and args['filters'] is not None:
