@@ -54,20 +54,15 @@ class traitement:
                 if list['filters']['predicate'] == "gt":
                     list['filters']['predicate'] = predicate['gt']
                     query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
-                    #return query
                 if list['filters']['predicate'] == "lt":
                     list['filters']['predicate'] = predicate['lt']
                     query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
-                    #return query
                 if list['filters']['predicate'] == "equal":
                     list['filters']['predicate'] = predicate['equal']
                     query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
-                    #return query
                 if list['filters']['predicate'] == "contains":
                     list['filters']['predicate'] = predicate['contains']
                     query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
-                    print(query)
-                    #return query
                 return query
         return False
 
@@ -75,13 +70,10 @@ class traitement:
     def queryChoose(self, list):
         query = ""
         if list['fields'] and list['filters'] is None:
-            print('mdrr')
             query = self.querySimple(list)
         elif list["fields"] and list["filters"] and list["filters"]["field"] and list["filters"]["value"]:
-            print('lol')
             query = self.queryFilter(list)
         elif list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
-            print('xptdr')
             query= self.queryPredicate(list)
         return query
         
@@ -94,7 +86,6 @@ class dsl(Resource):
         t = traitement()
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        print(args)
         if args['fields'] is not None and args['filters'] is not None:
             rq = t.queryChoose(args)
             cursor.execute(rq)
