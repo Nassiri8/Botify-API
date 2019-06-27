@@ -74,14 +74,15 @@ class traitement:
     #Traitement du lancement query ERROR
     def queryChoose(self, list):
         query = ""
-        if list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
-            query= self.queryPredicate(list)
-        if list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list["filters"]:
-            query = self.queryFilter(list)
-        if list['fields']:
+        if list['fields'] and list['filters'] is None:
+            print('mdrr')
             query = self.querySimple(list)
-        else:
-            return "bad JSON Format"
+        elif list["fields"] and list["filters"] and list["filters"]["field"] and list["filters"]["value"]:
+            print('lol')
+            query = self.queryFilter(list)
+        elif list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
+            print('xptdr')
+            query= self.queryPredicate(list)
         return query
         
 class dsl(Resource):
@@ -93,7 +94,10 @@ class dsl(Resource):
         t = traitement()
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        rq = t.queryChoose(args)
-        cursor.execute(rq)
-        rows = cursor.fetchall()
-        return jsonify(rows)
+        print(args)
+        if args['fields'] is not None and args['filters'] is not None:
+            rq = t.queryChoose(args)
+            cursor.execute(rq)
+            rows = cursor.fetchall()
+            return jsonify(rows)
+        return jsonify({'about':'bad Json format'})
