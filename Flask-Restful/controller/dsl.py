@@ -7,11 +7,6 @@ from flask_restful import Resource, Api, reqparse, inputs
 from flaskext.mysql import MySQL
 
 class traitement:
-    def queryChoose(self, list):
-        if list['fields'] and list['filters']:
-            return True
-        return False
-
     def fields(self, list):
         if list:
             return True
@@ -40,6 +35,41 @@ class traitement:
                 query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+"= "+str(list["filters"]["value"])
                 return query
         return False
+    
+    def queryPredicate(self, list):
+        predicate = {"gt": ">", "lt": "<", "equal":"=", "contains": "LIKE"}
+
+        if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
+            i= 0
+            queryParams = ""
+            while i < len(list['fields']):
+                queryParams += list['fields'][i] + ","
+                i+=1
+            queryParams = queryParams[:-1]
+            if list["filters"]["field"] and list["filters"]["value"] and list['filters']['predicate']:
+                if list['filters']['predicate'] == "gt":
+                    list['filters']['predicate'] == predicate['gt']
+                    query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
+                if list['filters']['predicate'] == "lt":
+                    list['filters']['predicate'] == predicate['lt']
+                    query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
+                if list['filters']['predicate'] == "equal":
+                    list['filters']['predicate'] == predicate['equal']
+                    query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
+                if list['filters']['predicate'] == "contains":
+                    list['filters']['predicate'] == predicate['contains']
+                    query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
+                return query
+        return False
+
+    #Traitement du lancement query
+    def queryChoose(self, list):
+        if list['fields'] and not None:
+            self.querySimple(list)
+        if list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list["filters"] is not None:
+            self.queryFilter(list)
+        if list["filters"]["field"] and list["filters"]["value"] and list['filters']['predicate']  and list["fields"] and list["filters"] is not None:
+            self.queryPredicate(list)
 
 class dsl(Resource):
     def post(self):
@@ -50,6 +80,6 @@ class dsl(Resource):
         t = traitement()
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute(t.queryFilter(args))
+        cursor.execute(t.queryChoose(args))
         rows = cursor.fetchall()
         return jsonify(rows)
