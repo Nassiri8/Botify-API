@@ -8,6 +8,7 @@ import sys
 sys.path.insert(0, './controller')
 from town import *
 from aggs import *
+from dsl import *
 
 api = Api(app)
 
@@ -26,6 +27,9 @@ api.add_resource(townWithMore, '/town/<int:population>')
 
 #Routes for aggs
 api.add_resource(aggs, '/aggs')
+
+#Route for DSL
+api.add_resource(dsl, '/query')
 
 if __name__ == '__main__':
     app.run()
