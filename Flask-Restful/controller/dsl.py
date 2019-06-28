@@ -76,17 +76,17 @@ class traitement:
             while i < len(list['filters']['and']):
                 if list['filters']['and'][i]['predicate'] == "gt":
                     list['filters']['and'][i]['predicate'] = predicate['gt']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND "
                     query.append(condi)
                     i+=1 
                 if list['filters']['and'][i]['predicate'] == "lt":
                     list['filters']['and'][i]['predicate'] = predicate['lt']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND "
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "equal":
                     list['filters']['and'][i]['predicate'] = predicate['equal']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND "
                     query.append(condi)
                     i+=1
             return query
@@ -101,29 +101,38 @@ class traitement:
             while i < len(list['filters']['or']):
                 if list['filters']['and'][i]['predicate'] == "gt":
                     list['filters']['and'][i]['predicate'] = predicate['gt']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND "
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "lt":
                     list['filters']['and'][i]['predicate'] = predicate['lt']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND "
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "equal":
                     list['filters']['and'][i]['predicate'] = predicate['equal']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value']) +"AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value']) +"AND "
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "contains":
                     list['filters']['and'][i]['predicate'] = predicate['contains']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND"
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND "
                     query.append(condi)
                     i+=1
             return query
     
     #return string about condition "Pop = ... AND/OR ..."            
     def createCondition(self, list):
-        return ""
+        if list['filters']['and']:
+            condi = self.checkListAnd(list)
+            str1 = ''.join(str(e) for e in condi)
+            str1 = str1[:-4]
+            return str1
+        if list['filters']['or']:
+            condi = self.checkListOr(list)
+            str1 = ''.join(str(e) for e in condi)
+            str1 = str1[:-3]
+            return str1
 
     #Query for AND/OR
     def queryAndOr(self, list):
@@ -135,15 +144,21 @@ class traitement:
                 queryParams += list['fields'][i] + ","
                 i+=1
             queryParams = queryParams[:-1]
+            condition = self.createCondition(list)
+            if condition:
+                query = "SELECT "+ queryParams+" FROM towns WHERE "+condition
+            return query
 
     #Traitement du lancement query ERROR
     def queryChoose(self, list):
         query = ""
         if list['fields'] and list['filters'] is None:
             query = self.querySimple(list)
-        elif list["fields"] and list["filters"] and list["filters"]["field"] and list["filters"]["value"]:
+        if list["fields"] and list["filters"] and list["filters"]["and"] or list["filters"]["or"]:
+            query = self.queryAndOr(list)
+        if list["fields"] and list["filters"] and list["filters"]["field"] and list["filters"]["value"]:
             query = self.queryFilter(list)
-        elif list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
+        if list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
             query= self.queryPredicate(list)
         return query
         
@@ -154,10 +169,9 @@ class dsl(Resource):
         parser.add_argument('filters', type=dict, location='json')
         args = parser.parse_args()
         t = traitement()
-        return jsonify(t.checkListAnd(args))
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        if args['fields'] is not None and args['filters'] is not None:
+        if (args['fields'] is not None and args['filters'] is not None) or (args["fields"] is not None and args["filters"] is None):
             rq = t.queryChoose(args)
             cursor.execute(rq)
             rows = cursor.fetchall()
