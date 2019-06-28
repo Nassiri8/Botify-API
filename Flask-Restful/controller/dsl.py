@@ -66,32 +66,32 @@ class traitement:
                 return query
         return False
 
-    #Check AND/OR 
+    #return list of string for the AND 
     def checkListAnd(self, list):
         predicate = {"gt": ">", "lt": "<", "equal":"=", "contains": "LIKE"}
-        query = []
+        query=[]
         condi = ""
         i = 0
         if list['filters']['and']:
             while i < len(list['filters']['and']):
                 if list['filters']['and'][i]['predicate'] == "gt":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['gt']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND"
                     query.append(condi)
                     i+=1 
                 if list['filters']['and'][i]['predicate'] == "lt":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['lt']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND"
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "equal":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['equal']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND"
                     query.append(condi)
                     i+=1
-                if list['filters']['and'][i]['predicate'] == "contains":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
-                    query.append(condi)
-                    i+=1      
             return query
 
+    #return list with string for the OR
     def checkListOr(self, list):  
         predicate = {"gt": ">", "lt": "<", "equal":"=", "contains": "LIKE"}
         query = []
@@ -100,26 +100,34 @@ class traitement:
         if list['filters']['or']:
             while i < len(list['filters']['or']):
                 if list['filters']['and'][i]['predicate'] == "gt":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['gt']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND"
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "lt":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['lt']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND"
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "equal":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['equal']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value']) +"AND"
                     query.append(condi)
                     i+=1
                 if list['filters']['and'][i]['predicate'] == "contains":
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])
+                    list['filters']['and'][i]['predicate'] = predicate['contains']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND"
                     query.append(condi)
                     i+=1
             return query
-                    
+    
+    #return string about condition "Pop = ... AND/OR ..."            
+    def createCondition(self, list):
+        return ""
+
     #Query for AND/OR
     def queryAndOr(self, list):
-        predicate = {"gt": ">", "lt": "<", "equal":"=", "contains": "LIKE"}
+        query = ""
         if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
             i= 0
             queryParams = ""
@@ -146,7 +154,7 @@ class dsl(Resource):
         parser.add_argument('filters', type=dict, location='json')
         args = parser.parse_args()
         t = traitement()
-        return jsonify(t.checkList(args))
+        return jsonify(t.checkListAnd(args))
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         if args['fields'] is not None and args['filters'] is not None:
