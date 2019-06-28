@@ -89,6 +89,11 @@ class traitement:
                     condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND "
                     query.append(condi)
                     i+=1
+                if list['filters']['and'][i]['predicate'] == "contains":
+                    list['filters']['and'][i]['predicate'] = predicate['contains']
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"OR "
+                    query.append(condi)
+                    i+=1
             return query
 
     #return list with string for the OR
@@ -99,24 +104,24 @@ class traitement:
         i = 0
         if list['filters']['or']:
             while i < len(list['filters']['or']):
-                if list['filters']['and'][i]['predicate'] == "gt":
-                    list['filters']['and'][i]['predicate'] = predicate['gt']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND "
+                if list['filters']['or'][i]['predicate'] == "gt":
+                    list['filters']['or'][i]['predicate'] = predicate['gt']
+                    condi = list['filters']['or'][i]['field'] + " "+ list['filters']['or'][i]['predicate']+" "+str(list['filters']['or'][i]['value'])+"OR "
                     query.append(condi)
                     i+=1
-                if list['filters']['and'][i]['predicate'] == "lt":
-                    list['filters']['and'][i]['predicate'] = predicate['lt']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND "
+                if list['filters']['or'][i]['predicate'] == "lt":
+                    list['filters']['or'][i]['predicate'] = predicate['lt']
+                    condi = list['filters']['or'][i]['field'] + " "+ list['filters']['or'][i]['predicate']+" "+str(list['filters']['or'][i]['value'])+"OR "
                     query.append(condi)
                     i+=1
-                if list['filters']['and'][i]['predicate'] == "equal":
+                if list['filters']['or'][i]['predicate'] == "equal":
                     list['filters']['and'][i]['predicate'] = predicate['equal']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value']) +"AND "
+                    condi = list['filters']['or'][i]['field'] + " "+ list['filters']['or'][i]['predicate']+" "+str(list['filters']['or'][i]['value']) +"OR "
                     query.append(condi)
                     i+=1
-                if list['filters']['and'][i]['predicate'] == "contains":
-                    list['filters']['and'][i]['predicate'] = predicate['contains']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"AND "
+                if list['filters']['or'][i]['predicate'] == "contains":
+                    list['filters']['or'][i]['predicate'] = predicate['contains']
+                    condi = list['filters']['or'][i]['field'] + " "+ list['filters']['or'][i]['predicate']+" "+str(list['filters']['or'][i]['value'])+"OR "
                     query.append(condi)
                     i+=1
             return query
@@ -154,13 +159,14 @@ class traitement:
         query = ""
         if list['fields'] and list['filters'] is None:
             query = self.querySimple(list)
-        if list["fields"] and list["filters"] and list["filters"]["and"] or list["filters"]["or"]:
-            query = self.queryAndOr(list)
         if list["fields"] and list["filters"] and list["filters"]["field"] and list["filters"]["value"]:
             query = self.queryFilter(list)
         if list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
             query= self.queryPredicate(list)
         return query
+
+""""if list["fields"] and list["filters"] and list["filters"]["and"] or list["filters"]["or"]:
+            query = self.queryAndOr(list)"""
         
 class dsl(Resource):
     def post(self):
@@ -169,9 +175,10 @@ class dsl(Resource):
         parser.add_argument('filters', type=dict, location='json')
         args = parser.parse_args()
         t = traitement()
+        return t.queryAndOr(args)
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        if (args['fields'] is not None and args['filters'] is not None) or (args["fields"] is not None and args["filters"] is None):
+        if args['fields'] is not None and args['filters'] is not None:
             rq = t.queryChoose(args)
             cursor.execute(rq)
             rows = cursor.fetchall()

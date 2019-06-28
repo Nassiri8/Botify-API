@@ -24,4 +24,4 @@ Test technique Botify:
         Implement DSL: 
 
         POST:
-        - /query: Traite un Json pour le transformer en SQL, 
+        - /query: Traite un Json pour le transformer en SQL
