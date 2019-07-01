@@ -1,5 +1,7 @@
 # Botify-Test
 
+Pré-requis: Python3, Flask, Flask-restful
+
 Test technique Botify:
 
     Script:
