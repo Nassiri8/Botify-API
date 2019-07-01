@@ -27,16 +27,10 @@ class traitement:
     
     #Query with only field and value
     def queryFilter(self, list):
-        if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
-            i= 0
-            queryParams = ""
-            while i < len(list['fields']):
-                queryParams += list['fields'][i] + ","
-                i+=1
-            queryParams = queryParams[:-1]
-            if list["filters"]["field"] and list["filters"]["value"]:
-                query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+"= "+str(list["filters"]["value"])
-                return query
+        query = self.querySimple(list)
+        if list["filters"]["field"] and list["filters"]["value"]:
+            query= query+' WHERE '+list["filters"]["field"]+" = "+str(list["filters"]["value"])
+            return query
         return False
     
     #Query with predicate in JSON
@@ -62,6 +56,7 @@ class traitement:
                     query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
                 if list['filters']['predicate'] == "contains":
                     list['filters']['predicate'] = predicate['contains']
+                    list['filters']['value'] = '%'+list['filters']['value']+'%'
                     query= 'SELECT '+queryParams+' FROM towns WHERE '+list["filters"]["field"]+" "+list['filters']['predicate']+" "+str(list["filters"]["value"])
                 return query
         return False
@@ -89,11 +84,12 @@ class traitement:
                     condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND "
                     query.append(condi)
                     i+=1
-                if list['filters']['and'][i]['predicate'] == "contains":
+                """"if list['filters']['and'][i]['predicate'] == "contains":
                     list['filters']['and'][i]['predicate'] = predicate['contains']
-                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+"OR "
+                    list['filters']['value'] = '%'+list['filters']['value']+'%'
+                    condi = list['filters']['and'][i]['field'] + " "+ list['filters']['and'][i]['predicate']+" "+str(list['filters']['and'][i]['value'])+" AND "
                     query.append(condi)
-                    i+=1
+                    i+=1"""
             return query
 
     #return list with string for the OR
@@ -121,6 +117,7 @@ class traitement:
                     i+=1
                 if list['filters']['or'][i]['predicate'] == "contains":
                     list['filters']['or'][i]['predicate'] = predicate['contains']
+                    list['filters']['value'] = '%'+list['filters']['value']+'%'
                     condi = list['filters']['or'][i]['field'] + " "+ list['filters']['or'][i]['predicate']+" "+str(list['filters']['or'][i]['value'])+"OR "
                     query.append(condi)
                     i+=1
@@ -139,34 +136,28 @@ class traitement:
             str1 = str1[:-3]
             return str1
 
-    #Query for AND/OR
+    #return Query for AND/OR
     def queryAndOr(self, list):
-        query = ""
-        if self.fields(list['filters']) == True and list['filters'] is not None or not list['filters']:
-            i= 0
-            queryParams = ""
-            while i < len(list['fields']):
-                queryParams += list['fields'][i] + ","
-                i+=1
-            queryParams = queryParams[:-1]
-            condition = self.createCondition(list)
-            if condition:
-                query = "SELECT "+ queryParams+" FROM towns WHERE "+condition
-            return query
+        query = self.querySimple(list)
+        condition = self.createCondition(list)
+        if condition:
+            query = query+" "+condition
+        return query
 
     #Traitement du lancement query ERROR
     def queryChoose(self, list):
         query = ""
         if list['fields'] and list['filters'] is None:
             query = self.querySimple(list)
+        if list["fields"] and list["filters"] and list["filters"]["and"]:
+            query = self.queryAndOr(list)
         if list["fields"] and list["filters"] and list["filters"]["field"] and list["filters"]["value"]:
             query = self.queryFilter(list)
         if list["filters"]["field"] and list["filters"]["value"] and list["fields"] and list['filters']['predicate']:
             query= self.queryPredicate(list)
         return query
 
-""""if list["fields"] and list["filters"] and list["filters"]["and"] or list["filters"]["or"]:
-            query = self.queryAndOr(list)"""
+        
         
 class dsl(Resource):
     def post(self):
@@ -175,12 +166,10 @@ class dsl(Resource):
         parser.add_argument('filters', type=dict, location='json')
         args = parser.parse_args()
         t = traitement()
-        return t.queryAndOr(args)
+        return t.queryFilter(args)
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        if args['fields'] is not None and args['filters'] is not None:
-            rq = t.queryChoose(args)
-            cursor.execute(rq)
-            rows = cursor.fetchall()
-            return jsonify(rows)
-        return jsonify({'about':'bad Json format'})
+        rq = t.queryChoose(args)
+        cursor.execute(rq)
+        rows = cursor.fetchall()
+        return jsonify(rows)

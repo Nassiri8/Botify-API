@@ -25,3 +25,8 @@ Test technique Botify:
 
         POST:
         - /query: Traite un Json pour le transformer en SQL
+            type: 
+            -> SELECT [fields] FROM towns
+            -> SELECT [fields] FROM towns WHERE [field] = [value]
+            -> SELECT [fields] FROM towns WHERE [field] [predicate] [value]
+            -> SELECT [fields] FROM towns WHERE [field] [predicate] [value] AND/OR [field] [predicate] [value]
