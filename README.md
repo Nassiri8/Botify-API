@@ -5,9 +5,9 @@
 Test technique Botify:
 
 Script:
-    - Conversion CSV to Mysql: csvToDb.py
-    - Installation des dépendance: install
-    - Lancement de L'API: run
+        - Conversion CSV to Mysql: csvToDb.py,
+        - Installation des dépendance: install,
+        - Lancement de L'API: run
 
     API Flask-Restful:
     GET:
