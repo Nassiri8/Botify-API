@@ -1,13 +1,13 @@
 # Botify-Test
 
-Pré-requis: Python3, Flask, Flask-restful
+                                           Pré-requis: Python3, Flask, Flask-restful
 
 Test technique Botify:
 
-    Script:
-        - Conversion CSV to Mysql: csvToDb.py
-        - Installation des dépendance: install
-        - Lancement de L'API: run
+Script:
+    - Conversion CSV to Mysql: csvToDb.py
+    - Installation des dépendance: install
+    - Lancement de L'API: run
 
     API Flask-Restful:
     GET:
