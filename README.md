@@ -1,8 +1,9 @@
 # Botify-Test
 
-#Pré-requis: 
-    - machine noyau Unix, ubuntu de préférence
-    - Avoir une base de donnée nommer botify
+#Pré-requis:
+        
+        - machine noyau Unix, ubuntu de préférence
+        - Avoir une base de donnée nommer botify
 
 Test technique Botify:
 
@@ -15,8 +16,11 @@ Test technique Botify:
         - Lancement de L'API: run
 
 #API Flask-Restful:
-    GET:
-        Town:
+    
+        Read list of Towns:
+
+        GET:
+        Towns:
         - /towns: Liste de toutes les villes dans un json par ville
         - /town/<string:name>: Donne la ville selon la Name passer dans l'URL 
         - /town/delete/<string:name>: Delete la ville selon le name passer en URL
@@ -39,8 +43,8 @@ Test technique Botify:
             -> SELECT [fields] FROM towns WHERE [field] [predicate] [value] AND/OR [field] [predicate] [value]
 
 #Fonctionnement: 
-    bash /script/install.sh
-        /script/run.sh
+        - bash /script/install.sh
+        - bash  /script/run.sh
 
 #Note: 
 
