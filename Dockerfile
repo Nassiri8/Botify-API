@@ -1,5 +1,5 @@
 # python:alpine is 3.{latest}
-FROM python:alpine 
+FROM python:alpine
 
 COPY script /script 
 

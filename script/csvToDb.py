@@ -4,7 +4,7 @@ import pymysql
 
 data = []
 
-mydb = pymysql.connect(host='127.0.0.1',
+mydb = pymysql.connect(host='172.16.30.209',
     user='root',
     passwd='',
     db='botify')
