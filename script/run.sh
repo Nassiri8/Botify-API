@@ -1,3 +1,5 @@
 #!/bin/bash
 
-python3 ../Flask-Restful/api.py
+cd ../Flask-Restful/
+
+python3 api.py
