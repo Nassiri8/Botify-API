@@ -1,0 +1,7 @@
+Flask
+Flask-MySQL
+Flask-RESTful
+jsonpatch
+jsonpointer
+jsonschema
+PyMySQL

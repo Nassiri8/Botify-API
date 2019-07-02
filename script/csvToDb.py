@@ -19,7 +19,6 @@ with open('database.csv', encoding="utf8") as csvfile:
 cursor.execute("CREATE TABLE towns({} INT, {} VARCHAR(255), {} VARCHAR(255), {} INT, {} INT, {} VARCHAR(255), {} float, {} float)".format(data[0][0].replace(" ", "_"), data[0][1].replace(" ", "_"), data[0][2].replace(" ", "_"), data[0][3].replace(" ", "_"), data[0][4].replace(" ", "_"), data[0][5].replace(" ", "_"), data[0][6], data[0][7].replace(" ", "_")))
 data.remove(data[0])
 data.remove(data[0])
-print(data[3])
 
 i=0
 while i < len(data):
