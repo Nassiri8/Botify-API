@@ -1,4 +1,6 @@
-# Botify-Test
+# Botify-Test technique 
+
+Realiser en premiere année 
 
 #Pré-requis:
         
